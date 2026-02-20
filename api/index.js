@@ -1,16 +1,24 @@
 import express from "express"
 import cors from "cors"
 import dotenv from "dotenv"
-import connectDB from "./config/db.js"
-import Product from "./models/Product.js"
+import connectDB from "../config/db.js"
+import Product from "../models/Product.js"
 
-dotenv.config()
-connectDB()
 
 const app = express()
 app.use(cors())
 app.use(express.json())
 
+// Connect DB for every request (serverless safe)
+app.use(async (req, res, next) => {
+  await connectDB()
+  next()
+})
+
+// Test Route
+app.get("/", (req, res) => {
+  res.json({ message: "API Working 🚀" })
+})
 // -------------------- GET ALL PRODUCTS --------------------
 app.get("/products", async (req, res) => {
   try {
